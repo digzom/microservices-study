@@ -1,0 +1,22 @@
+apiVersion: app/v1
+kind: Deployment
+metadata:
+  name: posts-depl
+spec:
+  replicas: 1
+  # take all the given pods that I created
+  selector:
+    # with the labels that match posts
+    matchLabels:
+      app: posts
+  # configuration that is going to be applyed to all the pods
+  # that deployment going to make
+  template:
+    metadata:
+      labels:
+        app: posts
+    # pod spec
+    spec:
+      containers:
+        - name: posts
+          image: digzom/posts:0.0.1
