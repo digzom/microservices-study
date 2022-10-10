@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: posts-srv
+spec:
+  # exposing a port of one pod, generally used in dev contexts
+  type: NodePort
+  selector:
+    # identifying whitch pod we will expose the port do the outside world
+    # so here we are saying that we can look up to all the different pods
+    # with this label
+    app: posts
+  ports:
+    - name: posts
+      protocol: TCP
+      # this config below it's like the docker mapping port -> 4000:4000
+      # node service port (it can be any port), which is different of nodePort
+      port: 4000
+      # our application container port
+      targetPort: 4000
