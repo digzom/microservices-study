@@ -1,0 +1,51 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-srv
+  # this is where we tell that specific objects have routes to be set
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    # to make regex work on paths
+    nginx.ingress.kubernetes.io/use-regex: 'true'
+spec:
+  rules:
+    # here we are setting the routing rules. For which service will go each req
+    - host: posts.com
+      http:
+        paths:
+          - path: /posts/create
+            pathType: Prefix
+            backend:
+              service:
+                # once we are inside a cluster, we have to provide de clusterip service to make the communication
+                name: posts-clusterip-srv
+                # references the port att, not targetPort
+                port:
+                  number: 4000
+          - path: /posts
+            pathType: Prefix
+            backend:
+              service:
+                name: query-srv
+                port:
+                  number: 4002
+          - path: /posts/?(.*)/comments
+            pathType: Prefix
+            backend:
+              service:
+                name: comments-srv
+                port:
+                  number: 4001
+          # making sure that it will match any path within our react application
+          # we have to put this in the very end, because it will try to match the
+          # other, before. So the order here matters
+          - path: /?(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: client-srv
+                port:
+                  number: 3000
+
+
+
